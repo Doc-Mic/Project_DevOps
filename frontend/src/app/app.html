@@ -1,0 +1,54 @@
+<main class="page-shell">
+  <nav class="topbar" aria-label="Project navigation">
+    <a class="brand" href="#top"><span class="brand-mark">G</span><span>GTD Research Lab</span></a>
+    <a class="paper-link" href="https://doi.org/10.7717/peerj-cs.2252" target="_blank" rel="noreferrer">2024 research source <span aria-hidden="true">↗</span></a>
+  </nav>
+
+  <section class="hero" id="top">
+    <div class="hero-copy">
+      <p class="eyebrow">FULL STACK MACHINE LEARNING LAB</p>
+      <h1>Explore historical incident patterns.</h1>
+      <p class="hero-lede">A classroom demonstration that connects an Angular form to a locally served Random Forest model trained on GTD records.</p>
+      <div class="hero-meta"><span class="status-dot" [class.ready]="health()?.model_loaded"></span><span>{{ apiMessage() }}</span><span class="meta-separator">·</span><span>19 model inputs</span></div>
+    </div>
+    <div class="hero-art" aria-hidden="true"><div class="orbit orbit-one"></div><div class="orbit orbit-two"></div><div class="orbit orbit-three"></div><div class="orbit-core">GTD</div><span class="orbit-label label-one">1970—2017</span><span class="orbit-label label-two">32 groups</span></div>
+  </section>
+
+  @if (staticSite) {
+    <aside class="static-notice"><span class="notice-icon">i</span><div><strong>Static GitHub Pages demonstration</strong><p>The website is available publicly, but predictions run only on a computer with the local Flask API and trained model.</p></div></aside>
+  }
+
+  <section class="workbench">
+    <div class="section-heading"><div><p class="eyebrow">INCIDENT PROFILE</p><h2>Describe a historical event</h2></div><span class="required-note">All fields required</span></div>
+    <p class="section-intro">Select GTD codes from the labels or enter the incident’s year, date, and coordinates. The target organization is never an input.</p>
+
+    <form (ngSubmit)="submit()">
+      <div class="feature-grid">
+        @for (field of fields; track field.name) {
+          <label class="field" [attr.for]="field.name">
+            <span class="field-label">{{ field.label }} <span class="required-star">*</span></span>
+            @if (field.kind === 'number') {
+              <input [id]="field.name" type="number" [name]="field.name" [min]="field.min ?? null" [max]="field.max ?? null" [step]="field.step ?? 'any'" [(ngModel)]="values[field.name]" required />
+            } @else {
+              <select [id]="field.name" [name]="field.name" [(ngModel)]="values[field.name]" required>
+                <option [ngValue]="null" disabled>Select {{ field.label.toLowerCase() }}</option>
+                @for (option of field.options ?? []; track option.value) {
+                  <option [ngValue]="option.value">{{ option.label }}</option>
+                }
+              </select>
+            }
+          </label>
+        }
+      </div>
+      <div class="form-actions"><p><span class="lock-symbol">⌂</span> Your record is sent only to your local Flask server.</p><button type="submit" [disabled]="loading() || staticSite || !health()?.model_loaded">{{ loading() ? 'Classifying…' : 'Run local classification' }}<span aria-hidden="true">→</span></button></div>
+    </form>
+
+    @if (error()) { <p class="error-message" role="alert">{{ error() }}</p> }
+
+    @if (result(); as resultValue) {
+      <section class="result-panel" aria-live="polite"><div class="result-header"><div><p class="eyebrow">MODEL OUTPUT</p><h2>{{ resultValue.prediction }}</h2><p class="result-caption">Predicted reported organization</p></div><div class="result-badge">RF · v1.0</div></div><div class="probability-heading"><span>Top class scores</span><span>Relative model score</span></div>@for (item of resultValue.probabilities; track item.group) {<div class="probability-row"><span class="probability-name">{{ item.group }}</span><div class="probability-track"><span [style.width.%]="item.probability * 100"></span></div><span class="probability-value">{{ item.probability | percent:'1.0-1' }}</span></div>}<p class="disclaimer">{{ resultValue.disclaimer }}</p></section>
+    }
+  </section>
+
+  <footer class="page-footer"><p>Historical research classification · GTD 1970–2017</p><p>Teaching prototype only. Scores are not calibrated attribution probabilities.</p></footer>
+</main>

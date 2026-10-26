@@ -1,0 +1,21 @@
+{
+  "iyear": 2014.0,
+  "imonth": 6.0,
+  "iday": 1.0,
+  "extended": 0,
+  "country": 160,
+  "region": 5,
+  "latitude": 12.040721,
+  "longitude": 123.775566,
+  "specificity": 2,
+  "vicinity": 0,
+  "multiple": 0,
+  "success": 1,
+  "suicide": 0,
+  "attacktype1": 2,
+  "targtype1": 14,
+  "targsubtype1": 113,
+  "natlty1": 160,
+  "weaptype1": 5,
+  "weapsubtype1": 5
+}
